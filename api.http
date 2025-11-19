@@ -1,0 +1,32 @@
+### Get Welcome Message
+GET http://127.0.0.1:8000/
+
+### Get Balance (User 1)
+GET http://127.0.0.1:8000/balance
+x-api-key: user1_key
+
+### Get Balance (User 2)
+GET http://127.0.0.1:8000/balance
+x-api-key: user2_key
+
+### Deposit Money (User 1)
+POST http://127.0.0.1:8000/deposit
+Content-Type: application/json
+x-api-key: user1_key
+
+{
+  "amount": 500
+}
+
+### Withdraw Money (User 1)
+POST http://127.0.0.1:8000/withdraw
+Content-Type: application/json
+x-api-key: user1_key
+
+{
+  "amount": 200
+}
+
+### Try Invalid API Key
+GET http://127.0.0.1:8000/balance
+x-api-key: wrong_key
