@@ -1,9 +1,16 @@
 [project]
-name = "class6"
+name = "bankapp-backend"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
+description = "A simple Banking API with API key authentication"
+authors = []
 dependencies = [
-    "mangum>=0.19.0",
+    "fastapi",
+    "mangum",
+    "pydantic",
+    "uvicorn",
+    "python-multipart",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

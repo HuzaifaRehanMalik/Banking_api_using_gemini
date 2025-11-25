@@ -1,3 +1,5 @@
 fastapi
 mangum
 pydantic
+uvicorn
+python-multipart
