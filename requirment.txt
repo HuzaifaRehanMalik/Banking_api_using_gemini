@@ -1,4 +1,5 @@
 fastapi
-fastapi.middleware.cors
+uvicorn
+mangum
 pydantic
-typing
+typing_extensions
