@@ -5,6 +5,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict
+from mangum import Mangum   # 🔥 REQUIRED FOR VERCEL
 
 # ===========================
 # FASTAPI APP
@@ -28,12 +29,12 @@ app.add_middleware(
 # IN-MEMORY FAKE DATABASE
 # ===========================
 fake_users_db = {
-    "user1": {"name":"user1","api_key": "user1_key", "balance": 20000, "currency": "PKR"},
-    "user2": {"name":"user2","api_key": "user2_key", "balance": 50000, "currency": "PKR"},
+    "user1": {"name": "user1", "api_key": "user1_key", "balance": 20000, "currency": "PKR"},
+    "user2": {"name": "user2", "api_key": "user2_key", "balance": 50000, "currency": "PKR"},
 }
 
 # ===========================
-# REQUEST MODEL
+# REQUEST MODELS
 # ===========================
 class Transaction(BaseModel):
     amount: float
@@ -46,9 +47,6 @@ class LoginRequest(BaseModel):
 # AUTHENTICATION DEPENDENCY
 # ===========================
 def get_current_user(x_api_key: str = Header(..., alias="x-api-key")):
-    """
-    Validates the provided API key.
-    """
     for username, data in fake_users_db.items():
         if data["api_key"] == x_api_key:
             return username
@@ -59,13 +57,13 @@ def get_current_user(x_api_key: str = Header(..., alias="x-api-key")):
     )
 
 # ===========================
-# LOGIN ENDPOINT
+# LOGIN
 # ===========================
 @app.post("/login/")
 def login(login_request: LoginRequest):
     username = login_request.username
     api_key = login_request.api_key
-    
+
     if username in fake_users_db and fake_users_db[username]["api_key"] == api_key:
         user_data = fake_users_db[username]
         return {
@@ -74,14 +72,14 @@ def login(login_request: LoginRequest):
             "balance": user_data["balance"],
             "currency": user_data["currency"]
         }
-    
+
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid username or API Key."
     )
 
 # ===========================
-# GET BALANCE
+# BALANCE
 # ===========================
 @app.get("/balance/")
 def get_balance(current_user: str = Depends(get_current_user)):
@@ -93,7 +91,7 @@ def get_balance(current_user: str = Depends(get_current_user)):
     }
 
 # ===========================
-# DEPOSIT MONEY
+# DEPOSIT
 # ===========================
 @app.post("/deposit/")
 def deposit(transaction: Transaction, current_user: str = Depends(get_current_user)):
@@ -112,7 +110,7 @@ def deposit(transaction: Transaction, current_user: str = Depends(get_current_us
     }
 
 # ===========================
-# WITHDRAW MONEY
+# WITHDRAW
 # ===========================
 @app.post("/withdraw/")
 def withdraw(transaction: Transaction, current_user: str = Depends(get_current_user)):
@@ -137,8 +135,13 @@ def withdraw(transaction: Transaction, current_user: str = Depends(get_current_u
     }
 
 # ===========================
-# ROOT ENDPOINT
+# ROOT
 # ===========================
 @app.get("/")
 def home():
-    return {"message": "Welcome to the FastAPI Banking App ??"}
+    return {"message": "Welcome to the FastAPI Banking App 🚀"}
+
+# ===========================
+# VERCEL HANDLER
+# ===========================
+handler = Mangum(app)
